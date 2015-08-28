@@ -11,49 +11,46 @@ Bonus User Story: As a user, I can search through the streams listed.
 Bonus User Story: As a user, I will see a placeholder notification if a streamer has closed their Twitch account. You can verify this works by adding brunofin and comster404 to your array of Twitch streamers.
 
 */
-	var streamersNames = ["comst er404", "pax", "freecodecamp", "storbeck", ,"pokerstarsfrance", "terakilobyte", "habathcx","RobotCaleb","						thomasballinger","noobs2ninjas","beohoff"],
+	var streamersNames = ["comster404", "freecodecamp", "newjs", "storbeck", "pokerstarsfrance", "terakilobyte", "meow", "habathcx", "Izzaldin2001", "pax", "RobotCaleb", "thomasballinger", "noobs2ninjas", "beohoff"],
 		streamsUrl="https://api.twitch.tv/kraken/streams/", // online == stream obj,
 		channelsUrl="https://api.twitch.tv/kraken/channels/",
 		streamersList = $(".streamers-list ul"),
-		defaultLogo = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png";
+		defaultLogo = "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png",
+		search = $(".search input"),
+		MAX_LINE = 40;
 
-function Streamer(){
-	this.name = null;
-	this.pic = null;
-	this.url = null;
-	this.streamDesc = null;
-}
-Streamer.prototype.DOMHandler = function(stremer){
-	
+// return a jQuery obj that have a 'name' string
+var getStreamerItem = function(name){
+		var lis = $(streamersList.children("li")),
+			item;
+		for(var i=0; i<lis.length; i++){
+			if($(lis[i]).find(".name").text().toLowerCase() == name.toLowerCase())
+			return $(lis[i]);
+		}
 };
-
 var createEmptyStreamer = function(s){
-	var li  = $(document.createElement("li")),
+
+	var a = $(document.createElement("a"))
+										  .attr("href", (s.url) ? s.url: "")
+											.attr("target", "_blank"),
+		li  = $(document.createElement("li")),
 		img = $(document.createElement("img")).addClass("float-left"),
 		name   = $(document.createElement("p")).addClass("name"),
 		details   = $(document.createElement("p")).addClass("details"),
 		span   = $(document.createElement("span")).addClass("stream-state float-right");
-	
-	li.append(img, name, details, span);
-	console.log(li);
+	a.append(img, name, details, span);
+	li.append(a);
 	return li;
 };
 
 var streamerOnline = function(channel){
-	/*
-	<li title="streaming now" class="text-left">
-		<img class="float-left inline-block" src="http://static-cdn.jtvnw.net/jtv_user_pictures/freecodecamp-profile_image-f1b681380c0b0380-300x300.png">
-		<p class="name">GeoffStorbeck</p>
-		<span class="stream-state float-right on"></span>
-		<p class="details float-left inline-block">Lorem ipsum dolor sit amet</p>
-	</li>
-	*/
-	var s = createEmptyStreamer();
-	s.attr("title", "online");
+
+	var s = createEmptyStreamer(channel);
+	s.attr("title", "Streaming now.. "+channel.status);
 	s.addClass("text-left");
 	s.find("img").attr("src", (channel.logo) ? channel.logo : defaultLogo);
 	s.find(".name").text(channel.display_name);
-	s.find(".details").text(channel.status);
+	s.find(".details").text((channel.status.length < MAX_LINE) ? channel.status : channel.status.substring(0, MAX_LINE)+"...");
 	s.find(".stream-state").addClass("on");
 
 	streamersList.append(s)
@@ -61,27 +58,19 @@ var streamerOnline = function(channel){
 var streamerOffline = function(streamerName){
 
 	$.get(channelsUrl+streamerName+"?callback=?", function(channel){
-		var s = createEmptyStreamer();
-		console.log("Offline : ", channel)
+		var s = createEmptyStreamer(channel);
 		if(channel.error){
 			s.find("img").attr("src", defaultLogo)
-			s.find("p").text(channel.message).css('text-decoration', "line-through");
-			streamersList.append(s);
-			console.log(channel.message)
+			s.find(".name").text(streamerName).parents("li").addClass("error");
+			s.find(".details").text(channel.message);
 		}else{
-			/*
-				<li title="offline">
-					<img class="float-left" src="http://static-cdn.jtvnw.net/jtv_user_pictures/habathcx-profile_image-d75385dbe4f42a66-300x300.jpeg">
-					<p class="name">GeoffStorbeck</p>
-					<span class="stream-state float-right off"></span>
-				</li>
-			*/
-			s.attr("title", "offline");
+			s.attr("title", "Offline");
+			s.addClass("offline");
 			s.find("img").attr("src", (channel.logo) ? channel.logo : defaultLogo);
 			s.find(".name").text(channel.display_name);
 			s.find(".stream-state").addClass("off");
-			streamersList.append(s);
 		}
+		streamersList.append(s);
 
 	}, "jsonp");
 
@@ -95,5 +84,27 @@ var streamerOffline = function(streamerName){
 				streamerOffline(streamerName)
 			}
 		}, "jsonp");
+	});
+
+var isStartWith = function(txt, s){
+	return txt.substring(0, s.length) == s	
+};
+	search.on("keyup", function(){
+		var txt = $(this).val().trim()
+		if(txt.length < 1){
+			$(streamersList.children("li")).css('display', 'block')
+		}
+		streamersNames.forEach(function(name){
+			var item = getStreamerItem(name.toLowerCase())
+			
+			if(!isStartWith(name.toLowerCase(), txt.toLowerCase())){
+				console.log('hada ta3 '+name.toLowerCase(), item)
+				if(item)
+					$(item[0]).css('display', 'none')
+			}else{
+				if(item)
+					$(item[0]).css('display', 'block')
+			}
+		});
 	});
 });
