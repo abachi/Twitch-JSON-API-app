@@ -1,0 +1,83 @@
+* {margin:0;padding: 0;}
+a{text-decoration: none;}
+/* General rules*/
+.clear{clear:both;}
+.float-left{ float: left}
+.float-right{float: right;}
+.text-center{ text-align: center;}
+.text-left{text-align: left;}
+.inline-block{display: inline-block;}
+.va-middle{vertical-align: middle}
+/*---------*/
+
+body{
+	background-color: #a18ec4;
+	color: #333;
+	font-family: "Roboto"
+}
+
+.streamers-list{
+	width: 380px;
+	height: auto;
+	overflow: hidden;
+	margin: 5% auto;
+	background-color: #eae8e8;
+}
+
+.search{
+	width: 100%;
+	height: 40px;
+	padding: 0 10px;
+	background-color: #6441a5;
+	color: #fff;
+}
+.search input{
+	margin: 9px 10px 0;
+	padding: 0 5px;
+	width: 233px;
+	height: 23px;
+	border: none;
+	border-radius: 2px;
+}
+.search i{ font-size: 20px;}
+ul{
+	margin: 10px 5px;
+}
+ul li{
+	display: block;
+	margin: 5px auto 0;
+	width: 90%;
+	height: 50px;
+	background-color: #f4f4f4;
+	border-bottom: 1px solid #ccc;
+	overflow: hidden;
+	position: relative;
+}
+ul li img{
+	width: 50px;
+	height: 50px;
+	margin-right: 8px;
+}
+ul li[title="offline"] .name{
+	margin-top: 15px;
+}
+.name{
+	margin: 5px 0;
+	font-size: 16px;
+	font-family: "Roboto Medium";
+}
+.details{ 
+	font-size: 10px; 
+	color: #ccc;
+	margin-top: 5px;
+}
+.stream-state{
+	width: 5px;
+	height: 50px;
+	display: block;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.off{ background-color: #f84644;}
+.on{ background-color: #7dc03d;}
